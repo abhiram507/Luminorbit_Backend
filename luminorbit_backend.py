@@ -1281,10 +1281,10 @@ class Settings(BaseSettings):
     # ── CLOUDINARY ─────────────────────────────────────────────
     # CLOUDINARY_CLOUD_ID must be the cloud NAME (e.g. "my-studio"),
     # NOT the numeric account ID (e.g. 465592115187579).
-    CLOUDINARY_CLOUD_ID:      str = ""
-    CLOUDINARY_UPLOAD_PRESET: str = "luminorbit_unsigned"
-    CLOUDINARY_API_KEY:       str = ""
-    CLOUDINARY_API_SECRET:    str = ""
+    CLOUDINARY_CLOUD_ID:      str = "d26dbd107e1de31947837821d9ce47"
+    CLOUDINARY_UPLOAD_PRESET: str = "luminorbit_signed"
+    CLOUDINARY_API_KEY:       str = "465592115187579"
+    CLOUDINARY_API_SECRET:    str = "f88NVZdJyq5JWd7YGv190KB4QwA"
 
     # ── PROVIDER API KEYS ──────────────────────────────────────
     POLLINATIONS_API_KEY: str = "sk_bBl03mf55TNrWCLFEPbemNMEIa3c6ZoX"
