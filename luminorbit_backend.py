@@ -3421,16 +3421,3 @@ async def global_error(request: Request, exc: Exception):
         status_code=500,
         content={"success": False, "error": "internal_server_error"},
     )
-
-
-# ═══════════════════════════════════════════════════════════════════════════════
-# §26  ENTRYPOINT
-# ═══════════════════════════════════════════════════════════════════════════════
-
-if __name__ == "__main__":
-    import uvicorn
-    port    = int(os.environ.get("PORT", 8000))
-    workers = int(os.environ.get("WORKERS", 1))
-logger.info("Starting Luminorbit on port %d (workers=%d)", port, workers)
-    uvicorn.run("luminorbit_backend_FIXED:app", host="0.0.0.0", port=port,
-                workers=workers, reload=False, access_log=True)
