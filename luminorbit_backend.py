@@ -1281,27 +1281,27 @@ class Settings(BaseSettings):
     # ── CLOUDINARY ─────────────────────────────────────────────
     # CLOUDINARY_CLOUD_ID must be the cloud NAME (e.g. "my-studio"),
     # NOT the numeric account ID (e.g. 465592115187579).
-    CLOUDINARY_CLOUD_ID:      str = "d26dbd107e1de31947837821d9ce47"
-    CLOUDINARY_UPLOAD_PRESET: str = "luminorbit_signed"
-    CLOUDINARY_API_KEY:       str = "465592115187579"
-    CLOUDINARY_API_SECRET:    str = "f88NVZdJyq5JWd7YGv190KB4QwA"
+    CLOUDINARY_CLOUD_ID:      str = ""
+    CLOUDINARY_UPLOAD_PRESET: str = ""
+    CLOUDINARY_API_KEY:       str = ""
+    CLOUDINARY_API_SECRET:    str = ""
 
     # ── PROVIDER API KEYS ──────────────────────────────────────
-    POLLINATIONS_API_KEY: str = "sk_bBl03mf55TNrWCLFEPbemNMEIa3c6ZoX"
-    KREA_API_KEY:         str = "c6bdc32d-6c16-465f-9a98-9a1c47f219e2:s7Z2Oq8x8hK9edlNBvFp6yI5T1XrLBkt"
-    TOGETHER_API_KEY:     str = "tgp_v1_lwHnHeTk-ooHH-2V5ne_NTPEe_AqnnmKJ4yvU_YLuso"
-    HF_API_KEY:           str = "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"
-    DEEPAI_API_KEY:       str = "6eb82984-f653-419c-8a3a-7c5ff2a225dd"
-    PIXAZO_API_KEY:       str = "f882fc20c4264c48b0400ca4b9b4bdc"
-    PEXELS_API_KEY:       str = "gGaEZhdac0414O11gGHDKTnrjFtjprZHP2PZey08A2JbH7qTTMAzECbw"
-    UNSPLASH_API_KEY:     str = "GIQkAqSZ9DT704ZuNMoCQMeZemETSOoti21v0xo1NxU"
-    OPENROUTER_API_KEY:   str = "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"
-    SEGMIND_API_KEY:      str = "SG_f0c0391841af5add"
-    CF_AI_TOKEN:          str = "cfut_l5I38Yop3VrVX4493Tp2dwqwbypI2EChxXXl5Zula947b3c0"
-    CF_ACCOUNT_ID:        str = "84fc2cd2ac091f95e12ae1960c601fe8"
-    GROQ_API_KEY:         str = "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"
-    GEMINI_API_KEY:       str = "AIzaSyA9rSbsrmOicBN-KOyL7jVUOmf5RQmz4Kc"
-    MISTRAL_API_KEY:      str = "qKwxfw5rabE7yk217B4zWKmKGKQlAL7Y"
+    POLLINATIONS_API_KEY: str = ""
+    KREA_API_KEY:         str = ""
+    TOGETHER_API_KEY:     str = ""
+    HF_API_KEY:           str = ""
+    DEEPAI_API_KEY:       str = ""
+    PIXAZO_API_KEY:       str = ""
+    PEXELS_API_KEY:       str = ""
+    UNSPLASH_API_KEY:     str = ""
+    OPENROUTER_API_KEY:   str = ""
+    SEGMIND_API_KEY:      str = ""
+    CF_AI_TOKEN:          str = ""
+    CF_ACCOUNT_ID:        str = ""
+    GROQ_API_KEY:         str = ""
+    GEMINI_API_KEY:       str = ""
+    MISTRAL_API_KEY:      str = ""
 
     # ── PROVIDER SCORING ───────────────────────────────────────
     PROVIDER_SCORE_DECAY: float = 0.9
