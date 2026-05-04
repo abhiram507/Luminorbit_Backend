@@ -117,17 +117,18 @@ import uuid
 # ═══════════════════════════════════════════════════════════════════════════════
 
 _REQUIREMENTS_TXT = """\
-fastapi==0.115.5
-uvicorn[standard]==0.32.1
-httpx==0.28.1
-pydantic==2.10.3
-pydantic-settings==2.6.1
-Pillow==11.0.0
-python-multipart==0.0.17
+fastapi==0.111.0
+uvicorn[standard]==0.29.0
+httpx==0.27.0
+pydantic==2.6.4
+pydantic-settings==2.2.1
+python-multipart==0.0.9
 slowapi==0.1.9
-redis==5.2.1
+redis==5.0.1
+Pillow==10.3.0
 python-json-logger==2.0.7
-starlette==0.41.3
+starlette==0.37.2
+cloudinary==1.39.1
 """
 
 _WORKER_JS_EMBED = r"""
@@ -3743,4 +3744,8 @@ async def global_error(request: Request, exc: Exception):
     return JSONResponse(
         status_code=500,
         content={"success": False, "error": "internal_server_error"},
+
+      @app.get("/health")
+      def health():
+    return {"status": "ok"},
     )
