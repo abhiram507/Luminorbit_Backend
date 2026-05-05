@@ -10,3 +10,7 @@ Pillow==10.3.0
 python-json-logger==2.0.7
 starlette==0.37.2
 cloudinary==1.39.1
+aiofiles==23.2.1
+orjson==3.10.3
+tenacity==8.2.3
+python-dotenv==1.0.1
