@@ -2756,6 +2756,8 @@ async def health() -> JSONResponse:
 @app.post("/api/process")
 async def process(request: Request) -> JSONResponse:
 
+    body = await request.json()
+
     tool       = body.get("tool", "")
     capability = body.get("capability", "basic-processing")
     params     = body.get("params", {})
@@ -2766,21 +2768,38 @@ async def process(request: Request) -> JSONResponse:
     request_id = body.get("request_id", str(uuid.uuid4()))
 
     if not tool:
-        return _error_response("MISSING_TOOL", "Required field 'tool' is missing", status=400)
+        return _error_response(
+            "MISSING_TOOL",
+            "Required field 'tool' is missing",
+            status=400
+        )
 
     file_bytes: Optional[bytes] = None
+
     if file_b64:
         try:
-            raw_b64    = file_b64.split(",", 1)[1] if "," in file_b64 else file_b64
+            raw_b64 = file_b64.split(",", 1)[1] if "," in file_b64 else file_b64
             file_bytes = base64.b64decode(raw_b64)
+
         except Exception:
-            return _error_response("INVALID_FILE", "File field is not valid base64", status=400)
+            return _error_response(
+                "INVALID_FILE",
+                "File field is not valid base64",
+                status=400
+            )
 
     result = await _pipeline.run(
-        tool=tool, capability=capability, params=params,
-        file_bytes=file_bytes, file_mime=file_mime,
-        resolution=resolution, user_id=user_id, request_id=request_id,
+        tool=tool,
+        capability=capability,
+        params=params,
+        file_bytes=file_bytes,
+        file_mime=file_mime,
+        resolution=resolution,
+        user_id=user_id,
+        request_id=request_id,
     )
+
+    return JSONResponse(content=result)
 
     # Defensive normalization — guarantee frontend never receives missing keys
     result.setdefault("success",             False)
