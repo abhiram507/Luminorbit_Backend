@@ -357,11 +357,7 @@ HF_SEGMENTATION_MODELS: List[Tuple[str, bool, bool]] = [
     ("briaai/RMBG-1.4",              False, False),
     ("briaai/RMBG-2.0",              False, False),
     ("ZhengPeng7/BiRefNet",           False, True),
-    ("ZhengPeng7/BiRefNet-portrait",  False, True),
-    ("Xenova/rmbg-1.4",              False, False),
-    ("schirrmacher/rembg",            False, False),
 ]
-
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # §5  QUALITY INTELLIGENCE
@@ -2738,6 +2734,15 @@ def _error_response(
     )
 
 
+# Root endpoint
+@app.get("/")
+async def root() -> JSONResponse:
+    return JSONResponse({
+        "status": "Luminorbit backend running",
+        "version": "v37"
+    })
+
+
 @app.get("/health")
 async def health() -> JSONResponse:
     stats = await _router.provider_stats()
@@ -2750,10 +2755,6 @@ async def health() -> JSONResponse:
 
 @app.post("/api/process")
 async def process(request: Request) -> JSONResponse:
-    try:
-        body = await request.json()
-    except Exception:
-        return _error_response("INVALID_REQUEST", "Request body is not valid JSON", status=400)
 
     tool       = body.get("tool", "")
     capability = body.get("capability", "basic-processing")
