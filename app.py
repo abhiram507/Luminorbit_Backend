@@ -2756,16 +2756,44 @@ async def health() -> JSONResponse:
 @app.post("/api/process")
 async def process(request: Request) -> JSONResponse:
 
-    body = await request.json()
+    try:
+        body = await request.json()
+    except Exception as e:
+        logger.exception("[process] Invalid JSON")
 
-    tool       = body.get("tool", "")
+        return _error_response(
+            "INVALID_REQUEST",
+            f"Request body is not valid JSON: {str(e)}",
+            status=400
+        )
+
+    tool = body.get("tool", "")
     capability = body.get("capability", "basic-processing")
-    params     = body.get("params", {})
-    file_b64   = body.get("file", "")
-    file_mime  = body.get("mime", "image/jpeg")
+    params = body.get("params", {})
+
+    # Frontend compatibility
+    file_b64 = (
+        body.get("file")
+        or body.get("file_data")
+        or ""
+    )
+
+    file_mime = (
+        body.get("mime")
+        or body.get("file_mime")
+        or "image/jpeg"
+    )
+
     resolution = body.get("resolution", "1024x1024")
-    user_id    = body.get("user_id", "anonymous")
+    user_id = body.get("user_id", "anonymous")
     request_id = body.get("request_id", str(uuid.uuid4()))
+
+    logger.info(
+        "[process] tool=%s capability=%s request_id=%s",
+        tool,
+        capability,
+        request_id
+    )
 
     if not tool:
         return _error_response(
@@ -2774,30 +2802,76 @@ async def process(request: Request) -> JSONResponse:
             status=400
         )
 
-    file_bytes: Optional[bytes] = None
+    file_bytes = None
 
     if file_b64:
         try:
-            raw_b64 = file_b64.split(",", 1)[1] if "," in file_b64 else file_b64
+            raw_b64 = (
+                file_b64.split(",", 1)[1]
+                if "," in file_b64
+                else file_b64
+            )
+
             file_bytes = base64.b64decode(raw_b64)
 
-        except Exception:
+            logger.info(
+                "[process] file decoded bytes=%d req=%s",
+                len(file_bytes),
+                request_id
+            )
+
+        except Exception as e:
+
+            logger.exception("[process] Base64 decode failed")
+
             return _error_response(
                 "INVALID_FILE",
-                "File field is not valid base64",
+                f"File field is not valid base64: {str(e)}",
                 status=400
             )
 
-    result = await _pipeline.run(
-        tool=tool,
-        capability=capability,
-        params=params,
-        file_bytes=file_bytes,
-        file_mime=file_mime,
-        resolution=resolution,
-        user_id=user_id,
-        request_id=request_id,
-    )
+    try:
+
+        logger.info(
+            "[pipeline] START tool=%s cap=%s req=%s",
+            tool,
+            capability,
+            request_id
+        )
+
+        result = await _pipeline.run(
+            tool=tool,
+            capability=capability,
+            params=params,
+            file_bytes=file_bytes,
+            file_mime=file_mime,
+            resolution=resolution,
+            user_id=user_id,
+            request_id=request_id,
+        )
+
+        logger.info(
+            "[pipeline] END success=%s provider=%s req=%s",
+            result.get("success"),
+            result.get("provider"),
+            request_id
+        )
+
+    except Exception as e:
+
+        logger.exception("[pipeline] CRASH req=%s", request_id)
+
+        return _error_response(
+            "PIPELINE_CRASH",
+            f"{type(e).__name__}: {str(e)}",
+            status=500
+        )
+
+    # Normalize output
+    result.setdefault("success", False)
+    result.setdefault("output", None)
+    result.setdefault("output_url", result.get("output"))
+    result.setdefault("provider", None)
 
     return JSONResponse(content=result)
 
