@@ -2832,41 +2832,64 @@ async def process(request: Request) -> JSONResponse:
 
     try:
 
-        logger.info(
-            "[pipeline] START tool=%s cap=%s req=%s",
-            tool,
-            capability,
-            request_id
-        )
+    logger.info("[process] AVAILABLE TOOLS CHECK")
 
-        result = await _pipeline.run(
-            tool=tool,
-            capability=capability,
-            params=params,
-            file_bytes=file_bytes,
-            file_mime=file_mime,
-            resolution=resolution,
-            user_id=user_id,
-            request_id=request_id,
-        )
-
-        logger.info(
-            "[pipeline] END success=%s provider=%s req=%s",
-            result.get("success"),
-            result.get("provider"),
-            request_id
-        )
-
+    try:
+        logger.info("Registered tools: %s", list(_pipeline.tools.keys()))
     except Exception as e:
+        logger.exception("Failed to inspect pipeline tools")
 
-        logger.exception("[pipeline] CRASH req=%s", request_id)
+    logger.info("=" * 80)
+    logger.info("[pipeline] EXECUTION START")
+    logger.info("tool=%s", tool)
+    logger.info("capability=%s", capability)
+    logger.info("params=%s", params)
+    logger.info("mime=%s", file_mime)
+    logger.info("resolution=%s", resolution)
+    logger.info("request_id=%s", request_id)
 
-        return _error_response(
-            "PIPELINE_CRASH",
-            f"{type(e).__name__}: {str(e)}",
-            status=500
-        )
+    if file_bytes:
+        logger.info("file_bytes_length=%d", len(file_bytes))
+    else:
+        logger.warning("NO FILE BYTES RECEIVED")
 
+    logger.info("=" * 80)
+
+    result = await _pipeline.run(
+        tool=tool,
+        capability=capability,
+        params=params,
+        file_bytes=file_bytes,
+        file_mime=file_mime,
+        resolution=resolution,
+        user_id=user_id,
+        request_id=request_id,
+    )
+
+    logger.info("=" * 80)
+    logger.info("[pipeline] RAW RESULT")
+    logger.info("%s", result)
+    logger.info("=" * 80)
+
+    if not result:
+        logger.error("[pipeline] EMPTY RESULT RETURNED")
+
+    logger.info(
+        "[pipeline] END success=%s provider=%s req=%s",
+        result.get("success") if isinstance(result, dict) else None,
+        result.get("provider") if isinstance(result, dict) else None,
+        request_id
+    )
+
+except Exception as e:
+
+    logger.exception("[pipeline] CRASH req=%s", request_id)
+
+    return _error_response(
+        "PIPELINE_CRASH",
+        f"{type(e).__name__}: {str(e)}",
+        status=500
+)
     # Normalize output
     result.setdefault("success", False)
     result.setdefault("output", None)
