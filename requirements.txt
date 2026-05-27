@@ -14,3 +14,8 @@ aiofiles==23.2.1
 orjson==3.10.3
 tenacity==8.2.3
 python-dotenv==1.0.1
+numpy==1.26.4
+onnxruntime==1.18.0
+rembg==2.0.57
+scikit-image==0.22.0
+opencv-python-headless==4.9.0.80
