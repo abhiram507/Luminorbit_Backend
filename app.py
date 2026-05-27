@@ -2914,19 +2914,37 @@ async def process(request: Request) -> JSONResponse:
             return _error_response("INVALID_FILE", f"File field is not valid base64: {e}", status=400)
 
     # ── 5. MIME normalization ────────────────────────────────────────────────
-    if file_bytes and not file_mime.startswith("image/"):
-        # Sniff from magic bytes
-        if file_bytes[:8] == b'\x89PNG\r\n\x1a\n':
-            file_mime = "image/png"
-        elif file_bytes[:3] == b'\xff\xd8\xff':
-            file_mime = "image/jpeg"
-        elif file_bytes[:4] == b'RIFF' and file_bytes[8:12] == b'WEBP':
-            file_mime = "image/webp"
-        elif file_bytes[:6] in (b'GIF87a', b'GIF89a'):
-            file_mime = "image/gif"
-        else:
-            file_mime = "image/jpeg"  # safe default
-        logger.info("[PROCESS] MIME sniffed → %s req=%s", file_mime, request_id)
+if file_bytes and not file_mime.startswith("image/"):
+
+    # PNG
+    if file_bytes[:8] == b'\x89PNG\r\n\x1a\n':
+        file_mime = "image/png"
+
+    # JPEG
+    elif file_bytes[:3] == b'\xff\xd8\xff':
+        file_mime = "image/jpeg"
+
+    # WEBP
+    elif (
+        len(file_bytes) > 12
+        and file_bytes[:4] == b'RIFF'
+        and file_bytes[8:12] == b'WEBP'
+    ):
+        file_mime = "image/webp"
+
+    # GIF
+    elif file_bytes[:6] in (b'GIF87a', b'GIF89a'):
+        file_mime = "image/gif"
+
+    # Fallback
+    else:
+        file_mime = "image/jpeg"
+
+    logger.info(
+        "[PROCESS] MIME sniffed → %s req=%s",
+        file_mime,
+        request_id
+)
 
     # ── 6. Pipeline execution ────────────────────────────────────────────────
     logger.info("[PROCESS] PIPELINE_START tool=%s cap=%s req=%s", tool, capability, request_id)
